@@ -1,3 +1,6 @@
+const { contextBridge } = require('electon');
+const { ipcRenderer } = require('electron');
+
 /**
  * The preload script runs before. It has access to web APIs
  * as well as Electron's renderer process modules and some
@@ -14,4 +17,8 @@ window.addEventListener('DOMContentLoaded', () => {
   for (const type of ['chrome', 'node', 'electron']) {
     replaceText(`${type}-version`, process.versions[type])
   }
+})
+
+contextBridge.exposeInMainWorld('versions',  {
+  ping: () => ipcRenderer.invoke(ping);
 })
