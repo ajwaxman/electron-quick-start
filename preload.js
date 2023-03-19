@@ -1,5 +1,4 @@
-const { contextBridge } = require('electon');
-const { ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer } = require('electron');
 
 /**
  * The preload script runs before. It has access to web APIs
@@ -19,6 +18,13 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 })
 
-contextBridge.exposeInMainWorld('versions',  {
-  ping: () => ipcRenderer.invoke(ping);
+console.log("testing")
+
+contextBridge.exposeInMainWorld('electronAPI', {
+  onUpdateCounter: (callback) => ipcRenderer.on('update-counter', callback)
 })
+
+contextBridge.exposeInMainWorld('versions', {
+  ping: () => ipcRenderer.invoke(ping),
+  test: console.log("hello")
+});

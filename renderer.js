@@ -5,3 +5,22 @@
  * `contextIsolation` is turned on. Use the contextBridge API in `preload.js`
  * to expose Node.js functionality from the main process.
  */
+
+const func = async () => {
+    // const response = await window.versions.ping
+    // console.log(response) // prints out 'pong'
+}
+
+const counter = document.getElementById('counter');
+console.log(counter);
+
+window.electronAPI.onUpdateCounter((event, value) => {
+    const oldValue = Number(counter.innerText)
+    const newValue = oldValue + value
+    counter.innerText = newValue
+    event.sender.send('counter-value', newValue);
+})
+
+console.log("hello")
+
+func()

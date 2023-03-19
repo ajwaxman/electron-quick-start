@@ -1,9 +1,7 @@
 // Modules to control application life and create native browser window
 const { menubar } = require('menubar');
-const {app, BrowserWindow, globalShortcut, Menu, Tray} = require('electron')
+const {app, BrowserWindow, globalShortcut, ipcMain, Menu} = require('electron')
 const path = require('path');
-const { start } = require('repl');
-const internal = require('stream');
 
 
 function createWindow () {
@@ -15,12 +13,34 @@ function createWindow () {
       preload: path.join(__dirname, 'preload.js')
     }
   })
+  ipcMain.handle('ping', () => 'pong')
+
+  const menu = Menu.buildFromTemplate([
+    {
+      label: app.name,
+      submenu: [
+        {
+          click: () => mainWindow.webContents.send('update-counter', 1),
+          label: 'Increment',
+        },
+        {
+          click: () => mainWindow.webContents.send('update-counter', -1),
+          label: 'Decrement',
+        }
+      ]
+    }
+  ])
+  Menu.setApplicationMenu(menu)
+
+  ipcMain.on('counter-value', (_event, value) => {
+    console.log(value)
+  })
 
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 }
 
 const timer = {
@@ -92,7 +112,7 @@ function getRemainingTime(endTime) {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  // createWindow()
+  createWindow()
 
   const mb = menubar();
 
